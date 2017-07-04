@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <h:outputStylesheet>
+            .contentUnit{
+                width:100%;
+            }
+            .contentUnit div{
+                background: #1f89ce;
+            }
+            .centerUnit{
+            
+            }
+            .centerUnit div{
+                background-image: url("../../resources/imagenes/backgroundr.jpg");
+                background-position: center bottom;
+                background-size: 100% auto;
+            }
+        </h:outputStylesheet>
+      <link rel="stylesheet" href="../../resources/font-awesome-4.7.0/css/font-awesome.css"></link>
+    </h:head>
+    <h:body>
+        <p:layout fullPage="true">     
+            <p:layoutUnit position="center" size="500">
+                <p:layout>
+                    <p:layoutUnit position="north" size="100" styleClass="contentUnit">
+                        <ui:insert name="header" >
+                            <ui:include src="header.xhtml"/>
+                        </ui:insert>
+                    </p:layoutUnit>
+                    <p:layoutUnit position="center" styleClass="centerUnit">
+                        <ui:insert name="content" >
+                            <ui:include src="content.xhtml" />
+                        </ui:insert>          
+                    </p:layoutUnit>
+                </p:layout>
+            </p:layoutUnit>
+            <p:layoutUnit position="west">
+                <h:graphicImage width="200"  value="../../resources/imagenes/header.jpg" ></h:graphicImage>
+                <ui:insert name="menu" >
+                    <ui:include src="navigation.xhtml" />
+                </ui:insert>
+            </p:layoutUnit>
+        </p:layout>
+    </h:body>
+</html>

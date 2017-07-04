@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"  
+      >
+    <head>       
+    </head>
+    <body>
+        <ui:composition> 
+            <h:form>
+                <p:panelMenu stateful="false">
+                    <p:submenu label="Material">
+                        <p:submenu id="sub-cursos" label="Cursos" icon="fa fa-university"  >
+                            <p:menuitem value="Diurno" outcome="cursos" icon="fa fa-sun-o" ajax="false"/>
+                            <p:menuitem value="Vespertino" outcome="cursos" icon="fa fa-moon-o" ajax="false"/>
+                            <p:menuitem value="Advance" outcome="cursos" icon="fa fa-graduation-cap" ajax="false"/>
+                        </p:submenu>
+                        <p:menuitem value="Textos" outcome="textos" icon="fa fa-book" ajax="false"/>
+                    </p:submenu>
+                    <p:submenu label="Herramientas" >
+                        <p:menuitem value="Horario" outcome="horario" icon="fa fa-calendar" ajax="false" />
+                    </p:submenu>
+                    <p:submenu id="sub-acerca" label="Acerca" >
+                        <p:menuitem value="Autor" outcome="autor" icon="fa fa-user" ajax="false"/>
+                        <p:menuitem value="Mobile" outcome="tldr" icon="fa fa-gears" ajax="false"/>
+                    </p:submenu>
+                </p:panelMenu>
+            </h:form>
+        </ui:composition>	
+    </body>
+</html>

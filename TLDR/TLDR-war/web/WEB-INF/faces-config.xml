@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    <navigation-rule>
+        <display-name>Menu</display-name>
+        <from-view-id>/paginas/*</from-view-id>
+        <navigation-case>
+            <from-outcome>menu</from-outcome>
+            <to-view-id>/paginas/test.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>horario</from-outcome>
+            <to-view-id>/paginas/herramientas/Horario.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>cursos</from-outcome>
+            <to-view-id>/paginas/material/Cursos.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>textos</from-outcome>
+            <to-view-id>/paginas/material/Textos.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>autor</from-outcome>
+            <to-view-id>/paginas/acerca/AboutMe.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>tldr</from-outcome>
+            <to-view-id>/paginas/acerca/AboutTLDR.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule> 
+</faces-config>
