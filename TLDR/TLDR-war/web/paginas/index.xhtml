@@ -15,6 +15,14 @@
             .contentUnit div{
                 background: #1f89ce;
             }
+            .centerUnit{
+            
+            }
+            .centerUnit div{
+                background-image: url("../../resources/imagenes/backgroundr.jpg");
+                background-position: center bottom;
+                background-size: 100% auto;
+            }
         </h:outputStylesheet>
       <link rel="stylesheet" href="../resources/font-awesome-4.7.0/css/font-awesome.css"></link>
     </h:head>
@@ -27,7 +35,7 @@
                             <ui:include src="../include/template/header.xhtml"/>
                         </ui:insert>
                     </p:layoutUnit>
-                    <p:layoutUnit position="center" style="background-image: url('../resources/imagenes/backgroundr.jpg');">
+                    <p:layoutUnit position="center" styleClass="centerUnit">
                         <ui:insert name="content" >
                             <ui:include src="../include/template/content.xhtml" />
                         </ui:insert>          
