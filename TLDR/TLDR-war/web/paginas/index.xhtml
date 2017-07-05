@@ -10,31 +10,31 @@
     <h:head>
         <h:outputStylesheet>
             .contentUnit{
-                width:100%;
+            width:100%;
             }
             .contentUnit div{
-                background: #1f89ce;
+            background: #1f89ce;
             }
             .centerUnit{
-            
+
             }
             .centerUnit div{
-                background-image: url("../../resources/imagenes/backgroundr.jpg");
-                background-position: center bottom;
-                background-size: 100% auto;
+            background-image: url("../resources/imagenes/backgroundr.jpg");
+            background-position: center bottom;
+            background-size: 100% auto;
             }
         </h:outputStylesheet>
-      <link rel="stylesheet" href="../resources/font-awesome-4.7.0/css/font-awesome.css"></link>
+        <link rel="stylesheet" href="../resources/font-awesome-4.7.0/css/font-awesome.css"></link>
     </h:head>
     <h:body>
         <p:layout fullPage="true">     
+            <p:layoutUnit position="north" size="70" styleClass="contentUnit">
+                <ui:insert name="header" >
+                    <ui:include src="../include/template/header.xhtml"/>
+                </ui:insert>
+            </p:layoutUnit>
             <p:layoutUnit position="center" size="500">
                 <p:layout>
-                    <p:layoutUnit position="north" size="100" styleClass="contentUnit">
-                        <ui:insert name="header" >
-                            <ui:include src="../include/template/header.xhtml"/>
-                        </ui:insert>
-                    </p:layoutUnit>
                     <p:layoutUnit position="center" styleClass="centerUnit">
                         <ui:insert name="content" >
                             <ui:include src="../include/template/content.xhtml" />

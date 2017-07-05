@@ -8,14 +8,20 @@
       xmlns:f="http://java.sun.com/jsf/core">
     <body>
         <h:outputStylesheet>
-                .color-panel{
-                    background:#000000;
-                }
-         </h:outputStylesheet>
+            .color-panel{
+            background:#000000;
+            }
+        </h:outputStylesheet>
         <ui:composition>           
-            <h:form styleClass="color-panel">
-                <h:panelGrid id="contenedor" columns="1">
-                   header 
+            <h:form styleClass="color-panel" >
+                <h:panelGrid id="contenedor" columns="1" cellpadding="0">
+                    <p:graphicImage></p:graphicImage>
+                    <p:menubar style="position: absolute; right: 6px;" >
+                        <f:facet name="options">
+                            <p:inputText style="margin-right:10px" placeholder="Buscar"/>
+                            <p:commandButton type="button" value="Buscar" icon="ui-icon-extlink" />
+                        </f:facet>
+                    </p:menubar>
                 </h:panelGrid>
             </h:form>
         </ui:composition>

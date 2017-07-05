@@ -8,10 +8,32 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 template="../../include/template/template.xhtml">
     <ui:define name="content">
+        <script src="../../resources/javascript/calendar_es.js" type="text/javascript"></script>
+        <h:outputStylesheet>
+                .fc-button-group{
+                    display:none;
+                }
+                .fc-today-button{
+                    display:none;
+                }
+                .ui-widget-content .ui-state-highlight
+                {
+                    border: 1px solid #d5d5d5;
+                    background: #fff;
+                }
+                .ui-widget .eventoMat{
+                    background: #FFFF00;
+                    color: #000; 
+                }
+                .ui-widget .eventoInd{
+                    background: #610B38;
+                    color: #fff; 
+                } 
+            </h:outputStylesheet>
         <h:form>  
             <p:growl id="messages"/>
 
-            <p:menubar style="background-color: midnightblue;">
+            <p:menubar>
                 <p:submenu label="File" icon="ui-icon-document">
                     <p:submenu label="New" icon="ui-icon-contact">
                         <p:menuitem value="Project" url="#" />
@@ -49,15 +71,12 @@
 
                 <p:menuitem value="Quit" url="http://www.primefaces.org" icon="ui-icon-close" />
 
-                <f:facet name="options">
-                    <p:inputText style="margin-right:10px" placeholder="Search"/>
-                    <p:commandButton type="button" value="Logout" icon="ui-icon-extlink" />
-                </f:facet>
             </p:menubar>
 
             <h:panelGrid columnClasses="value">
                 <h3 style="margin-top: 0">Editable Schedule</h3>
-                <p:schedule id="schedule" value="#{scheduleView.eventModel}" widgetVar="myschedule" timeZone="GMT+2">
+
+                <p:schedule  id="schedule" allDaySlot="false" showHeader="false" value="#{scheduleView.eventModel}"     axisFormat='HH:mm", views: { week: { titleFormat: "D MMMM YYYY", columnFormat: "ddd DD-MM" }, day: { titleFormat: "D MMMM YYYY" } }, scrollTime: "17:00:00", dummy:"x' view="agendaWeek" widgetVar="myschedule" locale="es">
 
                     <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
                     <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
@@ -67,49 +86,22 @@
                 </p:schedule>
                 <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
                     <h:panelGrid id="eventDetails" columns="2">
-                        <p:outputLabel for="title" value="Titles:" />
+                        <p:outputLabel for="title" value="Titulo: " />
                         <p:inputText id="title" value="#{scheduleView.event.title}" required="true" />
 
-                        <p:outputLabel for="from" value="From:" />
-                        <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
+                        <p:outputLabel for="from" value="Desde: " />
+                        <p:calendar id="from" value="#{scheduleView.event.startDate}" pattern="dd/MM/yyyy HH:mm"/>
 
-                        <p:outputLabel for="to" value="To:" />
-                        <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
-
-                        <p:outputLabel for="allDay" value="All Day:" />
-                        <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.event.allDay}" />
+                        <p:outputLabel for="to" value="Hasta:" />
+                        <p:calendar id="to" value="#{scheduleView.event.endDate}" pattern="dd/MM/yyyy HH:mm"/>
 
                         <p:commandButton type="reset" value="Reset" />
-                        <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+                        <p:commandButton id="addButton" value="Guardar" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
                     </h:panelGrid>
                 </p:dialog>    
 
             </h:panelGrid>
         </h:form>  
-        <script type="text/javascript">
-            PrimeFaces.locales['tr'] = {
-                closeText: 'kapat',
-                prevText: 'geri',
-                nextText: 'ileri',
-                currentText: 'bugün',
-                monthNames: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-                    'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
-                monthNamesShort: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz',
-                    'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
-                dayNames: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
-                dayNamesShort: ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'],
-                dayNamesMin: ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'],
-                weekHeader: 'Hf',
-                firstDay: 1,
-                isRTL: false,
-                showMonthAfterYear: false,
-                yearSuffix: '',
-                month: 'Ay',
-                week: 'Hafta',
-                day: 'Gün',
-                allDayText: 'Tüm Gün'
-            };
-        </script>
         <style type="text/css">
             .value {
                 width: 1000px;
