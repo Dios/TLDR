@@ -34,49 +34,47 @@
             <p:growl id="messages"/>
 
             <p:menubar>
-                <p:submenu label="File" icon="ui-icon-document">
-                    <p:submenu label="New" icon="ui-icon-contact">
-                        <p:menuitem value="Project" url="#" />
-                        <p:menuitem value="Other" url="#" />
+                <p:submenu label="Archivo" icon="ui-icon-document">
+                    <p:submenu label="Cargar" icon="ui-icon-contact">
+                        <p:menuitem value="PDF" icon="fa fa-file-pdf-o" url="#" />
+                        <p:menuitem value="XLS" icon="fa fa-file-excel-o" url="#" />
                     </p:submenu>
-                    <p:menuitem value="Open" url="#" />
-                    <p:separator />
-                    <p:menuitem value="Quit" url="#" />
                 </p:submenu>
-
-                <p:submenu label="Edit" icon="ui-icon-pencil">
-                    <p:menuitem value="Undo" url="#" icon="ui-icon-arrowreturnthick-1-w" />
-                    <p:menuitem value="Redo" url="#" icon="ui-icon-arrowreturnthick-1-e" />
+                
+                <p:submenu label="Actiones" icon="ui-icon-gear">
+                        <p:menuitem value="Guardar Horario" actionListener="#{menuView.save}" icon="ui-icon-disk" update="messages"/>
+                        <p:menuitem value="Borrar" actionListener="#{menuView.delete}" icon="ui-icon-close" update="messages" ajax="false"/>
                 </p:submenu>
-
-                <p:submenu label="Help" icon="ui-icon-help">
-                    <p:menuitem value="Contents" url="#" />
-                    <p:submenu label="Search" icon="ui-icon-search">
+                
+                <p:submenu label="Compartir" icon="ui-icon-gear">
+                        <p:menuitem value="En Facebook" actionListener="#{menuView.save}" icon="fa fa-facebook" update="messages"/>
+                        <p:menuitem value="En Twitter" actionListener="#{menuView.delete}" icon="fa fa-twitter" update="messages" ajax="false"/>
+                </p:submenu>
+                
+                <p:submenu label="Ayuda" icon="ui-icon-help">
+                    <p:menuitem value="Obtener Excel" url="#" />
+                    <p:submenu label="COmo usar horario" icon="ui-icon-search">
                         <p:submenu label="Text">
                             <p:menuitem value="Workspace" url="#" />
                         </p:submenu>
                         <p:menuitem value="File" url="#" />
                     </p:submenu>
                 </p:submenu>
-
-                <p:submenu label="Actions" icon="ui-icon-gear">
-                    <p:submenu label="Ajax" icon="ui-icon-refresh">
-                        <p:menuitem value="Save" actionListener="#{menuView.save}" icon="ui-icon-disk" update="messages"/>
-                        <p:menuitem value="Update" actionListener="#{menuView.update}" icon="ui-icon-arrowrefresh-1-w" update="messages"/>
-                    </p:submenu>
-                    <p:submenu label="Non-Ajax" icon="ui-icon-newwin">
-                        <p:menuitem value="Delete" actionListener="#{menuView.delete}" icon="ui-icon-close" update="messages" ajax="false"/>
-                    </p:submenu>
-                </p:submenu>
-
-                <p:menuitem value="Quit" url="http://www.primefaces.org" icon="ui-icon-close" />
-
             </p:menubar>
 
             <h:panelGrid columnClasses="value">
                 <h3 style="margin-top: 0">Editable Schedule</h3>
 
-                <p:schedule  id="schedule" allDaySlot="false" showHeader="false" value="#{scheduleView.eventModel}"     axisFormat='HH:mm", views: { week: { titleFormat: "D MMMM YYYY", columnFormat: "ddd DD-MM" }, day: { titleFormat: "D MMMM YYYY" } }, scrollTime: "17:00:00", dummy:"x' view="agendaWeek" widgetVar="myschedule" locale="es">
+                <p:schedule  id="schedule" allDaySlot="false" showHeader="false" value="#{scheduleView.eventModel}" 
+                             resizable="true"
+                             minTime="08:00:00"
+                             maxTime="23:00:00"
+                             firstHour="8"
+                             axisFormat="HH:mm"
+                             scrollTime="11:00:00"
+                             columnFormat="week:'dddd',agendaWeek: 'dddd'"
+                             view="agendaWeek"
+                             widgetVar="myschedule" locale="es">
 
                     <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
                     <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
