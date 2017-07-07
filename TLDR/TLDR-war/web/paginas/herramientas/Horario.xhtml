@@ -10,26 +10,40 @@
     <ui:define name="content">
         <script src="../../resources/javascript/calendar_es.js" type="text/javascript"></script>
         <h:outputStylesheet>
-                .fc-button-group{
-                    display:none;
-                }
-                .fc-today-button{
-                    display:none;
-                }
-                .ui-widget-content .ui-state-highlight
-                {
-                    border: 1px solid #d5d5d5;
-                    background: #fff;
-                }
-                .ui-widget .eventoMat{
-                    background: #FFFF00;
-                    color: #000; 
-                }
-                .ui-widget .eventoInd{
-                    background: #610B38;
-                    color: #fff; 
-                } 
-            </h:outputStylesheet>
+            .estilo-combobox{
+            margin: 0 auto;
+            }
+            .estilo-combo{
+            float: right !important;
+            margin: 0 auto;
+            width: 222px !important;
+            }
+            .fc-button-group{
+            display:none;
+            }
+            .fc-today-button{
+            display:none;
+            }
+            .ui-widget-content .ui-state-highlight
+            {
+            border: 1px solid #d5d5d5;
+            background: #fff;
+            }
+            .ui-widget .eventoMat{
+            background: #FFFF00;
+            color: #000; 
+            }
+            .ui-widget .eventoInd{
+            background: #610B38;
+            color: #fff; 
+            } 
+            .col1 {
+            width:80%;
+            }
+            .col2 {
+            width:20%;
+            }
+        </h:outputStylesheet>
         <h:form>  
             <p:growl id="messages"/>
 
@@ -40,20 +54,20 @@
                         <p:menuitem value="XLS" icon="fa fa-file-excel-o" url="#" />
                     </p:submenu>
                 </p:submenu>
-                
+
                 <p:submenu label="Actiones" icon="ui-icon-gear">
-                        <p:menuitem value="Guardar Horario" actionListener="#{menuView.save}" icon="ui-icon-disk" update="messages"/>
-                        <p:menuitem value="Borrar" actionListener="#{menuView.delete}" icon="ui-icon-close" update="messages" ajax="false"/>
+                    <p:menuitem value="Guardar Horario" actionListener="#{menuView.save}" icon="ui-icon-disk" update="messages"/>
+                    <p:menuitem value="Borrar" actionListener="#{menuView.delete}" icon="ui-icon-close" update="messages" ajax="false"/>
                 </p:submenu>
-                
+
                 <p:submenu label="Compartir" icon="ui-icon-gear">
-                        <p:menuitem value="En Facebook" actionListener="#{menuView.save}" icon="fa fa-facebook" update="messages"/>
-                        <p:menuitem value="En Twitter" actionListener="#{menuView.delete}" icon="fa fa-twitter" update="messages" ajax="false"/>
+                    <p:menuitem value="En Facebook" actionListener="#{menuView.save}" icon="fa fa-facebook" update="messages"/>
+                    <p:menuitem value="En Twitter" actionListener="#{menuView.delete}" icon="fa fa-twitter" update="messages" ajax="false"/>
                 </p:submenu>
-                
+
                 <p:submenu label="Ayuda" icon="ui-icon-help">
                     <p:menuitem value="Obtener Excel" url="#" />
-                    <p:submenu label="COmo usar horario" icon="ui-icon-search">
+                    <p:submenu label="Como usar horario" icon="ui-icon-search">
                         <p:submenu label="Text">
                             <p:menuitem value="Workspace" url="#" />
                         </p:submenu>
@@ -62,19 +76,22 @@
                 </p:submenu>
             </p:menubar>
 
-            <h:panelGrid columnClasses="value">
-                <h3 style="margin-top: 0">Editable Schedule</h3>
+            <h:panelGrid columns="2" style="width: 100%;" columnClasses="col1,col2" cellpadding="0" cellspacing="0">
+                <f:facet name="header">
+                    <h:outputText value="Horario UNAB"/>
+                </f:facet>
 
-                <p:schedule  id="schedule" allDaySlot="false" showHeader="false" value="#{scheduleView.eventModel}" 
-                             resizable="true"
-                             minTime="08:00:00"
-                             maxTime="23:00:00"
-                             firstHour="8"
-                             axisFormat="HH:mm"
-                             scrollTime="11:00:00"
-                             columnFormat="week:'dddd',agendaWeek: 'dddd'"
-                             view="agendaWeek"
-                             widgetVar="myschedule" locale="es">
+                <p:schedule id="schedule" allDaySlot="false"  showHeader="false" value="#{scheduleView.eventModel}" 
+                            resizable="true"
+                            minTime="08:00:00"
+                            maxTime="23:00:00"
+                            axisFormat="HH:mm"
+                            scrollTime="11:00:00"
+                            timeZone="GMT-3"
+                            initialDate="#{scheduleView.initialDate}"
+                            columnFormat="week:'dddd',agendaWeek: 'dddd'"
+                            view="agendaWeek"
+                            widgetVar="myschedule" locale="es" >
 
                     <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
                     <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
@@ -82,7 +99,15 @@
                     <p:ajax event="eventResize" listener="#{scheduleView.onEventResize}" update="messages" />
 
                 </p:schedule>
-                <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
+                <h:panelGrid columns="1" cellpadding="0" styleClass="estilo-combobox">
+                    <p:selectCheckboxMenu id="menu" value="#{scheduleView.cursosSeleccionados}" label="Seleccionar cursos"
+                                          filter="true" filterMatchMode="startsWith" styleClass="estilo-combo" panelStyle="width:350px">
+                        <f:selectItems value="#{scheduleView.seleccionarCurso}" var="curso" itemLabel="#{curso.titulo}" itemValue="#{curso.titulo}" />
+                        <p:ajax event="change" immediate="true" process="@this"/>
+                    </p:selectCheckboxMenu>
+                    <p:commandButton value="Enviar" immediate="true" update="schedule" actionListener="#{scheduleView.cargarSeleccionados}" style="margin-top:10px;" />
+                </h:panelGrid>
+                <p:dialog widgetVar="eventDialog" header="Detalle" showEffect="clip" hideEffect="clip">
                     <h:panelGrid id="eventDetails" columns="2">
                         <p:outputLabel for="title" value="Titulo: " />
                         <p:inputText id="title" value="#{scheduleView.event.title}" required="true" />
@@ -100,11 +125,6 @@
 
             </h:panelGrid>
         </h:form>  
-        <style type="text/css">
-            .value {
-                width: 1000px;
-            }
-        </style>
 
     </ui:define>
 </ui:composition>
