@@ -22,7 +22,7 @@ public class Curso {
     String nombre_profesor;
     String horario;
     String modalidad;
-
+    
     public String getNrc() {
         return nrc;
     }

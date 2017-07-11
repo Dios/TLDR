@@ -11,6 +11,7 @@ package cl.tldr.backing;
  */
 import cl.tldr.dato.Cabecera;
 import cl.tldr.dato.Curso;
+import cl.tldr.util.Util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,7 +32,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+import javax.servlet.http.HttpSession;
 
 import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.ScheduleEntryResizeEvent;
@@ -46,40 +47,57 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 @ManagedBean
 @ViewScoped
 public class ScheduleView implements Serializable {
 
     private ScheduleModel eventModel;
-    private ScheduleEvent event = new DefaultScheduleEvent();
+    private ScheduleEvent event = new DefaultScheduleEvent("Test", new GregorianCalendar(2017, 4, 1).getTime(), new GregorianCalendar(2017, 4, 1).getTime(), "eventoMat");
     private List<String> cursosSeleccionados = new ArrayList();
     private List<Curso> listaCursos = new ArrayList();
     List<Curso> seleccionarCurso;
     List<Curso> cursosTotales = new ArrayList();
-    
+    String rutaExcel = "";
+    UploadedFile excel;
+    private boolean verPopup = false;
+    private String sessionId = "";
+
     @PostConstruct
     public void init() {
+
+        excel = null;
         eventModel = new DefaultScheduleModel();
-        // event = new DefaultScheduleEvent("Champions League Match", today1Pm(), today6Pm(), "eventoMat");
-        //eventModel.addEvent(event);
-        listaCursos = obtieneListaCursos();
+        //rutaExcel = "c:\\mapas\\";
+        rutaExcel = "/usr/local/archivos/";
+    }
+
+    public void getSessionID() {
+        FacesContext fCtx = FacesContext.getCurrentInstance();
+        HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+        sessionId = session.getId();
+    }
+
+    public void cargarHorario(String nombreArchivo) {
+        //Resetea las variables
+        eventModel.clear();
+        listaCursos.clear();
+
+        listaCursos = obtieneListaCursos(nombreArchivo);
         cursosTotales.addAll(listaCursos);
         seleccionarCurso = new ArrayList();
-        for(Curso curso: listaCursos)
-        {
+        for (Curso curso : listaCursos) {
             boolean contiene = false;
-            for(Curso cur : seleccionarCurso)
-            {
-                if(curso.getTitulo().toUpperCase().trim().equals(cur.getTitulo().toUpperCase().trim()))
-                {
+            for (Curso cur : seleccionarCurso) {
+                if (curso.getTitulo().toUpperCase().trim().equals(cur.getTitulo().toUpperCase().trim())) {
                     contiene = true;
                     break;
                 }
-                
+
             }
-            if(!contiene)
-            {
+            if (!contiene) {
                 seleccionarCurso.add(curso);
             }
         }
@@ -90,19 +108,18 @@ public class ScheduleView implements Serializable {
             }
         });
         for (Curso curso : listaCursos) {
-            if(curso.getHorario() != null)
-            {
+            if (curso.getHorario() != null) {
                 String[] horario = curso.getHorario().trim().split(";");
                 for (String str : horario) {
                     String[] detHorario = str.trim().split(" "); //0: Dia, 1:Hora 1, 3:Hora 2, 4:Sala
-                    eventModel.addEvent(obtenerEvento(curso.getNrc() + "-" + curso.getTitulo(), detHorario[0], detHorario[1], detHorario[3]));
+                    eventModel.addEvent(obtenerEvento(curso.getNrc() + "-" + curso.getTitulo(), detHorario[0], detHorario[1], detHorario[3], curso));
                 }
             }
         }
 
     }
 
-    public ScheduleEvent obtenerEvento(String nombre, String dia, String horaIni, String horaFin) {
+    public ScheduleEvent obtenerEvento(String nombre, String dia, String horaIni, String horaFin, Object data) {
         int diaEvento = 0;
         if (dia.toUpperCase().equals("LU")) {
             diaEvento = 1;
@@ -127,16 +144,20 @@ public class ScheduleView implements Serializable {
         Calendar fecFin = new GregorianCalendar(2017, 4, diaEvento);
         fecFin.set(Calendar.HOUR, Integer.valueOf(splitHoraFin[0]));
         fecFin.set(Calendar.MINUTE, Integer.valueOf(splitHoraFin[1]));
-        ScheduleEvent evento = new DefaultScheduleEvent(nombre, fecIni.getTime(), fecFin.getTime(), "eventoMat");
+        ScheduleEvent evento = null;
+        DefaultScheduleEvent aux = new DefaultScheduleEvent(nombre, fecIni.getTime(), fecFin.getTime(), "eventoMat");
+        aux.setData(data);
+        evento = aux;
         return evento;
     }
 
-    public List<Curso> obtieneListaCursos() {
+    public List<Curso> obtieneListaCursos(String nombreArchivo) {
         FileInputStream inputStream = null;
         List<Curso> listaCursos = new ArrayList();
         try {
             List<Cabecera> cabeceras = new ArrayList();
-            String excelFilePath = "/usr/local/archivos/test.xlsx";
+            //  String excelFilePath = "/usr/local/archivos/test.xlsx";
+            String excelFilePath = rutaExcel + nombreArchivo;
             inputStream = new FileInputStream(new File(excelFilePath));
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet firstSheet = workbook.getSheetAt(0);
@@ -210,7 +231,7 @@ public class ScheduleView implements Serializable {
                         }
                     } else if (i == getPosicionMatriz(cabeceras, "HORARIO")) {
                         if (cell.getCellTypeEnum().equals(cell.getCellTypeEnum().STRING)) {
-                            curso.setHorario(cell.getStringCellValue().replace("\n"," "));
+                            curso.setHorario(cell.getStringCellValue().replace("\n", " "));
                         }
                     } else if (i == getPosicionMatriz(cabeceras, "MODALIDAD")) {
                         if (cell.getCellTypeEnum().equals(cell.getCellTypeEnum().STRING)) {
@@ -250,6 +271,27 @@ public class ScheduleView implements Serializable {
         return -1;
     }
 
+    public void cargarExcel(FileUploadEvent eventoCargar) {
+        UploadedFile uploadedFile = eventoCargar.getFile();
+        System.out.println("excel " + uploadedFile);
+        if (uploadedFile != null) {
+            if (rutaExcel.equals("")) {
+                //ruta = parametrosFacadeLocal.buscarDominioCodigo("RUTA_MAPA_CRUCE", "1").getCodigo2();
+            }
+            if (sessionId.equals("")) {
+                getSessionID();
+            }
+            String nombreArchivo = "excel-" + sessionId + uploadedFile.getFileName().substring(uploadedFile.getFileName().lastIndexOf('.'));
+            System.out.println(nombreArchivo);
+            try {
+                Util.copyFile(rutaExcel, nombreArchivo, uploadedFile.getInputstream());
+                cargarHorario(nombreArchivo);
+            } catch (IOException ex) {
+                Logger.getLogger(ScheduleView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
     public Date getRandomDate(Date base) {
         Calendar date = Calendar.getInstance();
         date.setTime(base);
@@ -257,51 +299,38 @@ public class ScheduleView implements Serializable {
 
         return date.getTime();
     }
-    
-    public void cargarSeleccionados(){
+
+    public void cargarSeleccionados() {
         eventModel.clear();
         eventModel = new DefaultScheduleModel();
         listaCursos.clear();
-        System.out.println(cursosTotales.size());
-        
-        System.out.println(cursosSeleccionados.size());
-        System.out.println(cursosSeleccionados.get(0));
-        for(String curso: cursosSeleccionados)
-        {
-           for(Curso cursoOri: cursosTotales)
-           {
-               if(curso.toUpperCase().trim().equals(cursoOri.getTitulo().toUpperCase().trim()))
-               {
-                   listaCursos.add(cursoOri);
-               }
-           }
-        }
-        for (Curso curso : listaCursos) {
-            if(curso.getHorario() != null)
-            {
-                String[] horario = curso.getHorario().trim().split(";");
-                for (String str : horario) {
-                    String[] detHorario = str.trim().split(" "); //0: Dia, 1:Hora 1, 3:Hora 2, 4:Sala
-                    eventModel.addEvent(obtenerEvento(curso.getNrc() + "-" + curso.getTitulo(), detHorario[0], detHorario[1], detHorario[3]));
+        for (String curso : cursosSeleccionados) {
+            for (Curso cursoOri : cursosTotales) {
+                if (curso.toUpperCase().trim().equals(cursoOri.getTitulo().toUpperCase().trim())) {
+                    listaCursos.add(cursoOri);
                 }
             }
         }
-        for(ScheduleEvent ev: eventModel.getEvents())
-        {
-            System.out.println(ev.getTitle());
+        for (Curso curso : listaCursos) {
+            if (curso.getHorario() != null) {
+                String[] horario = curso.getHorario().trim().split(";");
+                for (String str : horario) {
+                    String[] detHorario = str.trim().split(" "); //0: Dia, 1:Hora 1, 3:Hora 2, 4:Sala
+                    eventModel.addEvent(obtenerEvento(curso.getNrc() + "-" + curso.getTitulo(), detHorario[0], detHorario[1], detHorario[3], curso));
+                }
+            }
         }
     }
-    
+
     public Date getInitialDate() {
         Calendar t = new GregorianCalendar(2017, 4, 1, 0, 0, 0);
-        System.out.println("S " + t.getTime());
         return t.getTime();
     }
 
     public ScheduleModel getEventModel() {
         return eventModel;
     }
-    
+
     public ScheduleEvent getEvent() {
         return event;
     }
@@ -310,22 +339,15 @@ public class ScheduleView implements Serializable {
         this.event = event;
     }
 
-    public void addEvent(ActionEvent actionEvent) {
-        if (event.getId() == null) {
-            eventModel.addEvent(event);
-        } else {
-            eventModel.updateEvent(event);
-        }
-        System.out.println("asd " + event.getStyleClass());
-        event = new DefaultScheduleEvent();
+    public void cerrar() {
+        verPopup = false;
     }
 
     public void onEventSelect(SelectEvent selectEvent) {
-        event = (ScheduleEvent) selectEvent.getObject();
-    }
-
-    public void onDateSelect(SelectEvent selectEvent) {
-        event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
+        verPopup = true;
+        if (selectEvent != null) {
+            event = (ScheduleEvent) selectEvent.getObject();
+        }
     }
 
     public void onEventMove(ScheduleEntryMoveEvent event) {
@@ -367,5 +389,30 @@ public class ScheduleView implements Serializable {
     public void setSeleccionarCurso(List<Curso> seleccionarCurso) {
         this.seleccionarCurso = seleccionarCurso;
     }
-    
+
+    public String getRutaExcel() {
+        return rutaExcel;
+    }
+
+    public void setRutaExcel(String rutaExcel) {
+        this.rutaExcel = rutaExcel;
+    }
+
+    public UploadedFile getExcel() {
+        return excel;
+    }
+
+    public void setExcel(UploadedFile excel) {
+        System.out.println("this " + excel);
+        this.excel = excel;
+    }
+
+    public boolean isVerPopup() {
+        return verPopup;
+    }
+
+    public void setVerPopup(boolean verPopup) {
+        this.verPopup = verPopup;
+    }
+
 }
